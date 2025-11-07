@@ -25,6 +25,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'chat',  # наше приложение
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -56,6 +58,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'MChat.wsgi.application'
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
