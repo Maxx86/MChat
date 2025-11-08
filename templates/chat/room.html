@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>💬 Чат</h2>
+<h2>Комната: {{ room_name }}</h2>
+<p>Вы вошли как <b>{{ username }}</b></p>
 <div id="chat-log" style="border:1px solid #ccc; height:300px; overflow-y:scroll; padding:10px;"></div>
 <input id="chat-message-input" type="text" placeholder="Введите сообщение..." class="form-control">
 <button id="chat-message-submit" class="btn btn-primary mt-2">Отправить</button>

@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Регистрация</title>
+    <title>Вход</title>
     <style>
         body {
             font-family: "Segoe UI", sans-serif;
@@ -27,14 +27,6 @@
         h2 {
             color: #222;
             margin-bottom: 25px;
-        }
-
-        label {
-            display: block;
-            text-align: left;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: #333;
         }
 
         input[type="text"],
@@ -72,7 +64,7 @@
             background-color: #4652c5;
         }
 
-        .login-link {
+        .register-link {
             margin-top: 16px;
             display: inline-block;
             color: #5563DE;
@@ -80,7 +72,7 @@
             font-weight: 600;
         }
 
-        .login-link:hover {
+        .register-link:hover {
             text-decoration: underline;
         }
 
@@ -101,7 +93,7 @@
 </head>
 <body>
 <div class="card">
-    <h2>Регистрация</h2>
+    <h2>Вход</h2>
 
     {% if messages %}
         <div class="messages">
@@ -113,16 +105,12 @@
 
     <form method="POST">
         {% csrf_token %}
-        <label for="username">Имя пользователя</label>
-        <input type="text" name="username" id="username" placeholder="Введите имя" required>
-
-        <label for="password">Пароль</label>
-        <input type="password" name="password" id="password" placeholder="Введите пароль" required>
-
-        <button type="submit">Зарегистрироваться</button>
+        <input type="text" name="username" placeholder="Имя пользователя" required>
+        <input type="password" name="password" placeholder="Пароль" required>
+        <button type="submit">Войти</button>
     </form>
 
-    <a href="{% url 'login' %}" class="login-link">У меня уже есть аккаунт</a>
+    <a href="{% url 'register' %}" class="register-link">Создать новый аккаунт</a>
 </div>
 </body>
 </html>
