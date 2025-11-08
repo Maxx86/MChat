@@ -1,27 +1,189 @@
 {% extends 'base.html' %}
+{% block title %}Чат - {{ room_name }}{% endblock %}
 {% block content %}
-<h2>💬 Чат</h2>
-<h2>Комната: {{ room_name }}</h2>
-<p>Вы вошли как <b>{{ username }}</b></p>
-<div id="chat-log" style="border:1px solid #ccc; height:300px; overflow-y:scroll; padding:10px;"></div>
-<input id="chat-message-input" type="text" placeholder="Введите сообщение..." class="form-control">
-<button id="chat-message-submit" class="btn btn-primary mt-2">Отправить</button>
+<style>
+body { background: #C8D5B9; font-family: Arial, sans-serif; }
+
+.chat-wrapper { display: flex; justify-content: center; align-items: flex-start; margin-top: 60px; gap: 20px; }
+.chat-card { display: flex; flex-direction: row; background: #E9EAD8; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,.2); overflow: hidden; width: 950px; max-width: 95%; min-height: 520px; }
+
+.chat-main { flex: 3; display: flex; flex-direction: column; padding: 25px; background: #f7f8f5; }
+.chat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.chat-header h2 { margin: 0; color: #333; }
+.chat-header button { background: #78866B; color:#fff; border:0; border-radius:8px; padding:6px 12px; cursor:pointer; font-weight:bold; }
+.chat-header button:hover { background:#5F6F52; }
+
+#chat-log { flex:1; width:100%; border:1px solid #999; border-radius:10px; padding:10px; font-size:14px; resize:none; overflow-y:auto; background:#fff; }
+
+.chat-input { display:flex; gap:10px; margin-top:15px; }
+#chat-message-input { flex:1; padding:10px; border-radius:8px; border:1px solid #999; background:#f5f6f2; }
+#chat-message-submit { background:#78866B; color:#fff; border:0; border-radius:8px; padding:10px 16px; font-weight:bold; cursor:pointer; }
+#chat-message-submit:hover { background:#5F6F52; }
+
+.users-panel { flex:1; background:#DCE1C3; border-left:1px solid #aaa; padding:20px; display:flex; flex-direction:column; }
+.users-panel h3 { text-align:center; margin-bottom:15px; color:#333; }
+#user-list { list-style:none; padding:0; margin:0; flex:1; overflow-y:auto; }
+#user-list li { background:#fff; padding:8px 12px; margin-bottom:8px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,.05); color:#333; display:flex; align-items:center; gap:8px; position:relative; }
+
+.status-dot {
+  width:10px; height:10px; border-radius:50%; display:inline-block;
+}
+
+.user-name { text-decoration:none; color:#333; font-weight:500; }
+.user-name:hover { text-decoration:underline; }
+
+.unread-indicator {
+  position:absolute;
+  right:10px;
+  width:8px; height:8px;
+  border-radius:50%;
+  background:red;
+  animation:pulse 1.2s infinite ease-in-out;
+}
+@keyframes pulse {
+  0%{ transform:scale(0.9); opacity:.7;}
+  50%{ transform:scale(1); opacity:1;}
+  100%{ transform:scale(0.9); opacity:.7;}
+}
+</style>
+
+<div class="chat-wrapper">
+  <div class="chat-card">
+    <div class="chat-main">
+      <div class="chat-header">
+        <h2>💬 Комната: {{ room_name }}</h2>
+        <button onclick="window.location.href='/chat/global/'">🌍 Общий чат</button>
+      </div>
+      <p>Вы вошли как <b>{{ username }}</b></p>
+      <textarea id="chat-log" readonly></textarea>
+      <div class="chat-input">
+        <input id="chat-message-input" type="text" placeholder="Введите сообщение..." autocomplete="off">
+        <button id="chat-message-submit">Отправить</button>
+      </div>
+    </div>
+
+    <div class="users-panel">
+      <h3>Онлайн</h3>
+      <ul id="user-list"></ul>
+    </div>
+  </div>
+</div>
 
 <script>
-    const chatSocket = new WebSocket(
-        'ws://' + window.location.host + '/ws/chat/'
-    );
+const currentUser = "{{ username }}";
+const roomName = "{{ room_name }}";
+const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/' + roomName + '/');
 
-    chatSocket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        document.querySelector('#chat-log').innerHTML += ('<p><b>' + data.user + '</b>: ' + data.message + '</p>');
-    };
+/* === localStorage для непрочитанных сообщений === */
+const STORAGE_KEY = "unread_" + currentUser;
+function loadUnread() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch { return {}; }
+}
+function saveUnread(obj) { localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); }
+function setUnread(user, value) {
+  const store = loadUnread();
+  if (value) store[user] = true;
+  else delete store[user];
+  saveUnread(store);
+}
+function hasUnread(user) {
+  const store = loadUnread();
+  return !!store[user];
+}
 
-    document.querySelector('#chat-message-submit').onclick = function(e) {
-        const messageInputDom = document.querySelector('#chat-message-input');
-        const message = messageInputDom.value;
-        chatSocket.send(JSON.stringify({'message': message}));
-        messageInputDom.value = '';
-    };
+/* === Рендер списка пользователей === */
+function renderUsers(all, online) {
+  const onlineSet = new Set(online || []);
+  const list = document.querySelector("#user-list");
+  list.innerHTML = "";
+  all.forEach(u => {
+    const li = document.createElement("li");
+    li.dataset.username = u;
+
+    // точка статуса (онлайн/оффлайн)
+    const dot = document.createElement("span");
+    dot.className = "status-dot";
+    dot.style.backgroundColor = onlineSet.has(u) ? "#5F6F52" : "#B33A3A";
+    li.appendChild(dot);
+
+    // имя
+    if (u === currentUser) {
+      const span = document.createElement("span");
+      span.textContent = `${u} (вы)`;
+      span.style.fontWeight = "bold";
+      li.appendChild(span);
+    } else {
+      const link = document.createElement("a");
+      link.href = "/chat/private/" + encodeURIComponent(u) + "/";
+      link.textContent = u;
+      link.className = "user-name";
+      link.onclick = () => setUnread(u, false);
+      li.appendChild(link);
+    }
+
+    // красная мигающая точка справа, если есть непрочитанное
+    if (hasUnread(u)) {
+      const alertDot = document.createElement("span");
+      alertDot.className = "unread-indicator";
+      li.appendChild(alertDot);
+    }
+
+    list.appendChild(li);
+  });
+}
+
+/* === WebSocket === */
+chatSocket.onmessage = function(e) {
+  const data = JSON.parse(e.data);
+  const chatLog = document.querySelector('#chat-log');
+
+  if (data.type === 'chat') {
+    chatLog.value += data.message + '\n';
+    chatLog.scrollTop = chatLog.scrollHeight;
+  }
+  else if (data.type === 'user_list') {
+    renderUsers(data.all || [], data.online || []);
+  }
+  else if (data.type === 'private_alert') {
+    if (data.target === currentUser) {
+      setUnread(data.sender, true);
+      const li = document.querySelector(`li[data-username="${data.sender}"]`);
+      if (li && !li.querySelector('.unread-indicator')) {
+        const alertDot = document.createElement('span');
+        alertDot.className = 'unread-indicator';
+        li.appendChild(alertDot);
+      }
+    }
+  }
+};
+
+chatSocket.onclose = () => console.error('Соединение с чатом закрыто.');
+
+/* === Отправка сообщений === */
+document.querySelector('#chat-message-submit').onclick = function() {
+  const input = document.querySelector('#chat-message-input');
+  const msg = input.value.trim();
+  if (msg) {
+    chatSocket.send(JSON.stringify({ message: msg }));
+    input.value = '';
+  }
+};
+
+/* === При открытии лички — очищаем уведомление === */
+(function clearIfPrivate() {
+  if (roomName.startsWith("private_")) {
+    const parts = roomName.replace("private_", "").split("_");
+    const other = parts.find(n => n !== currentUser);
+    if (other) {
+      setUnread(other, false);
+      const li = document.querySelector(`li[data-username="${other}"]`);
+      if (li) {
+        const alert = li.querySelector('.unread-indicator');
+        if (alert) alert.remove();
+      }
+    }
+  }
+})();
 </script>
 {% endblock %}

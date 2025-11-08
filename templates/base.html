@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}MChat{% endblock %}</title>
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, #74ABE2, #5563DE);
+            color: #222;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(6px);
+            padding: 12px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        a.logout-btn {
+            color: #fff;
+            background-color: #5563DE;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        a.logout-btn:hover {
+            background-color: #4652c5;
+        }
+
+        main {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h2>MChat</h2>
+    {% if user.is_authenticated %}
+        <a href="{% url 'logout' %}" class="logout-btn">Выйти</a>
+    {% endif %}
+</header>
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+</body>
+</html>

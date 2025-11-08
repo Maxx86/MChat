@@ -8,13 +8,14 @@ SECRET_KEY = 'django-insecure--+b)jw&w3t+q55-j)5wtnrlvzmruce88chvc9owrbkmm)g_u#@
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
+    'daphne',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -22,6 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'chat',  # наше приложение
     'channels',
+
 ]
 
 MIDDLEWARE = [
@@ -51,7 +53,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'MChat.wsgi.application'
+WSGI_APPLICATION = 'MChat.asgi.application'
 
 CHANNEL_LAYERS = {
     'default': {

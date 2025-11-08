@@ -9,3 +9,16 @@ class Message(models.Model):
 
     def __str__(self):
         return f'{self.user.username}: {self.text[:30]}'
+
+
+class Message(models.Model):
+    room_name = models.CharField(max_length=255)
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['timestamp']
+
+    def __str__(self):
+        return f"[{self.room_name}] {self.sender.username}: {self.content[:30]}"
