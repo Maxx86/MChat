@@ -1,11 +1,13 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
+from datetime import datetime
+from django.utils import timezone
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
-    active_users = {}  # {room_name: set(usernames)}
-    global_online = set()  # все пользователи онлайн
+    active_users = {}
+    global_online = set()
 
     async def connect(self):
         from django.contrib.auth.models import User
@@ -24,21 +26,33 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add("chat_global", self.channel_name)
         await self.accept()
 
+        # 💬 лог о подключении (только для общего чата)
+        if self.room_name == "global":
+            join_time = datetime.now().strftime("%H:%M")
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "system_message",
+                    "message": f"[{join_time}] 🔵 {self.username} вошёл(а) в чат"
+                }
+            )
+
         # обновляем список пользователей
         await self._update_all_user_lists()
 
-        # загружаем историю сообщений (без блокировок)
+        # загружаем историю сообщений
         messages = await sync_to_async(list)(
             Message.objects.filter(room_name=self.room_name)
             .order_by("timestamp")
-            .values("sender__username", "content")
+            .values("sender__username", "content", "timestamp")
         )
 
         for msg in messages:
             sender = msg["sender__username"] or "Гость"
+            ts = datetime.now().strftime("%d.%m, %H:%M")
             await self.send(text_data=json.dumps({
                 "type": "chat",
-                "message": f"{sender}: {msg['content']}"
+                "message": f"[{ts}] {sender}: {msg['content']}"
             }))
 
     async def disconnect(self, close_code):
@@ -64,18 +78,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if not message:
             return
 
-        # сохраняем сообщение
         user = None
         if self.scope["user"].is_authenticated:
             user = await sync_to_async(User.objects.get)(username=self.username)
 
-        await sync_to_async(Message.objects.create)(
+        msg = await sync_to_async(Message.objects.create)(
             sender=user,
             content=message,
             room_name=self.room_name
         )
 
-        # если это личка — шлём уведомление в глобальный чат
+        ts = datetime.now().strftime("%d.%m, %H:%M")
+        formatted = f"[{ts}] {self.username}: {message}"
+
+        # если это личка — уведомляем собеседника
         if self.room_name.startswith("private_"):
             users = self.room_name.replace("private_", "").split("_")
             target = next((u for u in users if u != self.username), None)
@@ -89,12 +105,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     }
                 )
 
-        # отправляем сообщение в комнату
         await self.channel_layer.group_send(
             self.room_group_name,
             {
                 "type": "chat_message",
-                "message": f"{self.username}: {message}"
+                "message": formatted
             }
         )
 
@@ -104,8 +119,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "message": event["message"]
         }))
 
+    async def system_message(self, event):
+        """⚙️ Системные события, вроде входа пользователя"""
+        await self.send(text_data=json.dumps({
+            "type": "chat",
+            "message": event["message"]
+        }))
+
     async def private_alert(self, event):
-        """🔴 Сигнал для глобального чата о новом личном сообщении"""
         await self.send(text_data=json.dumps({
             "type": "private_alert",
             "sender": event["sender"],
@@ -113,7 +134,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
     async def broadcast_user_list(self, event):
-        """📡 Отправка списка всех пользователей на фронт"""
         await self.send(text_data=json.dumps({
             "type": "user_list",
             "all": event["all"],
@@ -121,7 +141,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
     async def _update_all_user_lists(self):
-        """🔄 Собирает список всех пользователей и рассылает всем"""
         from django.contrib.auth.models import User
 
         users_all = await sync_to_async(list)(
@@ -130,11 +149,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         users_online = list(ChatConsumer.global_online)
 
         payload = {
-            "type": "broadcast_user_list",  # 👈 правильный handler
+            "type": "broadcast_user_list",
             "all": users_all,
             "online": users_online
         }
 
-        # отправляем обновление всем в глобальном и текущем чатах
         await self.channel_layer.group_send("chat_global", payload)
         await self.channel_layer.group_send(self.room_group_name, payload)

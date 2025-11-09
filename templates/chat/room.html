@@ -154,6 +154,8 @@ chatSocket.onmessage = function(e) {
         alertDot.className = 'unread-indicator';
         li.appendChild(alertDot);
       }
+      notifySound.currentTime = 0;
+      notifySound.play().catch(() => {});
     }
   }
 };
