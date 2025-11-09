@@ -31,7 +31,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def _fmt(ts):
         """Локализуем timestamp и показываем как [ДД.ММ, ЧЧ:ММ]."""
         local = timezone.localtime(ts)
-        return local.strftime("%d.%m, %H:%M")
+        return local.strftime("%H:%M")
 
     # ---------- ws lifecycle ----------
 
@@ -48,15 +48,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.scope["user"].username if self.scope["user"].is_authenticated else "Гость"
         )
 
+        # Фикс: добавляем в списки после подключения, чтобы не мешать join-логике
+        await self.accept()
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        await self.channel_layer.group_add("chat_global", self.channel_name)
+
+        # Проверяем, был ли пользователь уже активен в этой комнате
+        already_in_room = (
+                self.room_name in ChatConsumer.active_users
+                and self.username in ChatConsumer.active_users[self.room_name]
+        )
+
+        # Добавляем пользователя в активные
         ChatConsumer.active_users.setdefault(self.room_name, set()).add(self.username)
         ChatConsumer.global_online.add(self.username)
 
-        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-        await self.channel_layer.group_add("chat_global", self.channel_name)
-        await self.accept()
-
-        # системный лог входа в общий чат (без дублей в пределах 2 минут)
-        if self.room_name == "global":
+        # 💬 лог о подключении (только если впервые и только для общего чата)
+        if self.room_name == "global" and not already_in_room:
             system_user = await self._get_system_user()
             content = f"🔵 {self.username} вошёл(а) в чат"
 
@@ -64,7 +72,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 Message.objects.filter(
                     sender=system_user,
                     content=content,
-                    timestamp__gte=timezone.now() - timedelta(minutes=2),
+                    timestamp__gte=timezone.now() - timedelta(minutes=10),
                     room_name="global",
                 ).exists
             )()
@@ -83,23 +91,27 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     },
                 )
 
-        # обновляем списки онлайна
+        # обновляем список пользователей (без System)
         await self._update_all_user_lists()
 
-        # история комнаты (время берём из БД, форматируем локально)
+        from django.utils.timezone import localtime
+
+        # загружаем историю сообщений (кроме последнего системного лога)
         messages = await sync_to_async(list)(
             Message.objects.filter(room_name=self.room_name)
+            .exclude(content__icontains=f"🔵 {self.username} вошёл(а) в чат")
             .order_by("timestamp")
             .values("sender__username", "content", "timestamp")
         )
-        for m in messages:
-            sender = m["sender__username"] or "System"
-            ts = self._fmt(m["timestamp"])
-            await self.send(
-                text_data=json.dumps(
-                    {"type": "chat", "message": f"[{ts}] {sender}: {m['content']}"}
-                )
-            )
+
+        for msg in messages:
+            sender = msg["sender__username"] or "System"
+            # Преобразуем UTC → локальное время
+            ts_local = localtime(msg["timestamp"]).strftime("%H:%M")
+            await self.send(text_data=json.dumps({
+                "type": "chat",
+                "message": f"[{ts_local}] {sender}: {msg['content']}"
+            }))
 
     async def disconnect(self, close_code):
         if self.room_name in ChatConsumer.active_users:
@@ -172,9 +184,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def _update_all_user_lists(self):
         from django.contrib.auth.models import User
 
-        users_all = await sync_to_async(list)(User.objects.values_list("username", flat=True))
-        users_online = list(ChatConsumer.global_online)
+        users_all = await sync_to_async(list)(
+            User.objects.values_list("username", flat=True)
+        )
+        # убираем служебного System
+        users_all = [u for u in users_all if u != "System"]
 
-        payload = {"type": "broadcast_user_list", "all": users_all, "online": users_online}
+        users_online = [u for u in ChatConsumer.global_online if u != "System"]
+
+        payload = {
+            "type": "broadcast_user_list",
+            "all": users_all,
+            "online": users_online,
+        }
+
         await self.channel_layer.group_send("chat_global", payload)
         await self.channel_layer.group_send(self.room_group_name, payload)
