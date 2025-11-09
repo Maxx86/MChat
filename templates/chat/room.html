@@ -172,6 +172,13 @@ document.querySelector('#chat-message-submit').onclick = function() {
   }
 };
 
+document.querySelector('#chat-message-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault(); // чтобы не добавлялся перенос строки
+    document.querySelector('#chat-message-submit').click(); // имитируем клик по кнопке
+  }
+});
+
 /* === При открытии лички — очищаем уведомление === */
 (function clearIfPrivate() {
   if (roomName.startsWith("private_")) {

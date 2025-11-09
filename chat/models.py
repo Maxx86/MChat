@@ -3,17 +3,14 @@ from django.contrib.auth.models import User
 
 
 class Message(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    text = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f'{self.user.username}: {self.text[:30]}'
-
-
-class Message(models.Model):
     room_name = models.CharField(max_length=255)
-    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    sender = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,   # чтобы системные сообщения не падали
+        null=True,
+        blank=True,
+        related_name="messages"
+    )
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -21,4 +18,5 @@ class Message(models.Model):
         ordering = ['timestamp']
 
     def __str__(self):
-        return f"[{self.room_name}] {self.sender.username}: {self.content[:30]}"
+        sender_name = self.sender.username if self.sender else "Система"
+        return f"[{self.room_name}] {sender_name}: {self.content[:30]}"

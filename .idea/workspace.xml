@@ -4,9 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66f6764b-59b7-457c-a3b0-eab8f92438b6" name="Changes" comment="Статусы, чаты">
+    <list default="true" id="66f6764b-59b7-457c-a3b0-eab8f92438b6" name="Changes" comment="Дата, время">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MChat/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/MChat/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/chat/consumers.py" beforeDir="false" afterPath="$PROJECT_DIR$/chat/consumers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chat/migrations/0002_alter_message_options_rename_text_message_content_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chat/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/chat/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/chat/room.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/chat/room.html" afterDir="false" />
     </list>
@@ -132,7 +135,15 @@
       <option name="project" value="LOCAL" />
       <updated>1762622168222</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Дата, время">
+      <option name="closed" value="true" />
+      <created>1762673149668</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1762673149668</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -166,6 +177,7 @@
     <MESSAGE value="Start" />
     <MESSAGE value="Регистрация, Вход" />
     <MESSAGE value="Статусы, чаты" />
-    <option name="LAST_COMMIT_MESSAGE" value="Статусы, чаты" />
+    <MESSAGE value="Дата, время" />
+    <option name="LAST_COMMIT_MESSAGE" value="Дата, время" />
   </component>
 </project>
