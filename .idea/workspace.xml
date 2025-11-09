@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66f6764b-59b7-457c-a3b0-eab8f92438b6" name="Changes" comment="Время исправленное">
+    <list default="true" id="66f6764b-59b7-457c-a3b0-eab8f92438b6" name="Changes" comment="и снова время) так же лог сообщений">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/chat/consumers.py" beforeDir="false" afterPath="$PROJECT_DIR$/chat/consumers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/chat/room.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/chat/room.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -147,7 +147,15 @@
       <option name="project" value="LOCAL" />
       <updated>1762697879970</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="и снова время) так же лог сообщений">
+      <option name="closed" value="true" />
+      <created>1762699339561</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1762699339561</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -183,6 +191,7 @@
     <MESSAGE value="Статусы, чаты" />
     <MESSAGE value="Дата, время" />
     <MESSAGE value="Время исправленное" />
-    <option name="LAST_COMMIT_MESSAGE" value="Время исправленное" />
+    <MESSAGE value="и снова время) так же лог сообщений" />
+    <option name="LAST_COMMIT_MESSAGE" value="и снова время) так же лог сообщений" />
   </component>
 </project>
