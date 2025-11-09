@@ -2,62 +2,230 @@
 {% block title %}Чат - {{ room_name }}{% endblock %}
 {% block content %}
 <style>
-    body { background: #C8D5B9; font-family: Arial, sans-serif; }
+/* === Aurora Glass Chat — адаптировано под твой HTML === */
 
-    .chat-wrapper { display: flex; justify-content: center; align-items: flex-start; margin-top: 60px; gap: 20px; }
-    .chat-card { display: flex; flex-direction: row; background: #E9EAD8; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,.2); overflow: hidden; width: 950px; max-width: 95%; min-height: 520px; }
+/* Анимированный фон */
+/* === Aurora Glass Background (реалистичный фон) === */
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: "Inter", sans-serif;
+  color: #e2e8f0;
+  background-color: #0f172a;
+  background-image:
+    radial-gradient(at 40% 20%, rgba(56,189,248,0.45) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(168,85,247,0.35) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(236,72,153,0.4) 0px, transparent 50%),
+    radial-gradient(at 80% 50%, rgba(14,165,233,0.4) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(34,197,94,0.35) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, rgba(250,204,21,0.3) 0px, transparent 50%);
+  background-attachment: fixed;
+  background-size: 200% 200%;
+  animation: auroraFlow 18s ease infinite;
+}
 
-    .chat-main { flex: 3; display: flex; flex-direction: column; padding: 25px; background: #f7f8f5; }
-    .chat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .chat-header h2 { margin: 0; color: #333; }
-    .chat-header button { background: #78866B; color:#fff; border:0; border-radius:8px; padding:6px 12px; cursor:pointer; font-weight:bold; }
-    .chat-header button:hover { background:#5F6F52; }
+@keyframes auroraFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
 
-    #chat-log { flex:1; width:100%; border:1px solid #999; border-radius:10px; padding:10px; font-size:14px; resize:none; overflow-y:auto; background:#fff; }
 
-    .chat-input { display:flex; gap:10px; margin-top:15px; }
-    #chat-message-input { flex:1; padding:10px; border-radius:8px; border:1px solid #999; background:#f5f6f2; }
-    #chat-message-submit { background:#78866B; color:#fff; border:0; border-radius:8px; padding:10px 16px; font-weight:bold; cursor:pointer; }
-    #chat-message-submit:hover { background:#5F6F52; }
+/* Контейнер чата */
+.chat-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 60px;
+}
+.chat-card {
+  display: flex;
+  flex-direction: row;
+  width: 950px;
+  max-width: 95%;
+  min-height: 520px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
 
-    .users-panel { flex:1; background:#DCE1C3; border-left:1px solid #aaa; padding:20px; display:flex; flex-direction:column; }
-    .users-panel h3 { text-align:center; margin-bottom:15px; color:#333; }
-    #user-list { list-style:none; padding:0; margin:0; flex:1; overflow-y:auto; }
-    #user-list li { background:#fff; padding:8px 12px; margin-bottom:8px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,.05); color:#333; display:flex; align-items:center; gap:8px; position:relative; }
+/* Основная часть чата */
+.chat-main {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  padding: 25px;
+  color: #f8fafc;
+}
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.chat-header h2 {
+  margin: 0;
+  color: #f8fafc;
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+}
+.chat-header button {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-weight: bold;
+  color: white;
+  transition: 0.3s ease;
+}
+.chat-header button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 12px #38bdf8;
+}
 
-    .status-dot {
-      width:10px; height:10px; border-radius:50%; display:inline-block;
-    }
+/* Поле сообщений */
+#chat-log {
+  flex: 1;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  resize: none;
+  overflow-y: auto;
+  font-size: 15px;
+  font-family: "JetBrains Mono", monospace;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+  outline: none;
+}
 
-    .user-name { text-decoration:none; color:#333; font-weight:500; }
-    .user-name:hover { text-decoration:underline; }
+/* Ввод и кнопка */
+.chat-input {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+#chat-message-input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+  font-size: 15px;
+  backdrop-filter: blur(5px);
+}
+#chat-message-input:focus {
+  outline: 1px solid rgba(56,189,248,0.5);
+  background: rgba(255, 255, 255, 0.18);
+}
+#chat-message-submit {
+  background: linear-gradient(135deg, #06b6d4, #3b82f6);
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+#chat-message-submit:hover {
+  transform: scale(1.07);
+  box-shadow: 0 0 10px #3b82f6;
+}
 
-    .unread-indicator {
-      position:absolute;
-      right:10px;
-      width:8px; height:8px;
-      border-radius:50%;
-      background:red;
-      animation:pulse 1.2s infinite ease-in-out;
-    }
-    @keyframes pulse {
-      0%{ transform:scale(0.9); opacity:.7;}
-      50%{ transform:scale(1); opacity:1;}
-      100%{ transform:scale(0.9); opacity:.7;}
-    }
+/* Правая панель пользователей */
+.users-panel {
+  flex: 1;
+  background: rgba(255,255,255,0.08);
+  border-left: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(20px);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  color: #f1f5f9;
+}
+.users-panel h3 {
+  text-align: center;
+  margin-bottom: 15px;
+  color: #e0f2fe;
+  text-shadow: 0 0 8px rgba(56,189,248,0.4);
+}
 
-    #user-list li, #user-list-online li, #user-list-offline li {
-      background:#fff;
-      padding:8px 12px;
-      margin-bottom:8px;
-      border-radius:8px;
-      box-shadow:0 2px 5px rgba(0,0,0,.05);
-      color:#333;
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
+/* Списки пользователей */
+#user-list-online, #user-list-offline {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+  overflow-y: auto;
+}
+#user-list-online li, #user-list-offline li {
+  background: rgba(255,255,255,0.1);
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(255,255,255,0.05);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: 0.25s ease;
+}
+#user-list-online li:hover, #user-list-offline li:hover {
+  transform: scale(1.02);
+  background: rgba(56,189,248,0.15);
+}
+
+/* Иконка статуса */
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+#user-list-online .status-dot {
+  background: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
+}
+#user-list-offline .status-dot {
+  background: #ef4444;
+  opacity: 0.8;
+}
+
+/* Имена пользователей */
+.user-name {
+  text-decoration: none;
+  color: #e2e8f0;
+  font-weight: 500;
+}
+.user-name:hover {
+  text-shadow: 0 0 8px #38bdf8;
+}
+
+/* Индикатор непрочитанного */
+.unread-indicator {
+  margin-left: auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f43f5e;
+  animation: pulse 1.2s infinite ease-in-out;
+}
+@keyframes pulse {
+  0% { transform: scale(0.8); opacity: 0.7; }
+  50% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.8); opacity: 0.7; }
+}
 </style>
+
 
 <div class="chat-wrapper">
     <div class="chat-card">
