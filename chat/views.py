@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
 
-# === Регистрация ===
 def register(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -26,7 +25,6 @@ def register(request):
     return render(request, 'registration/register.html')
 
 
-# === Логин ===
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -42,13 +40,11 @@ def login_view(request):
     return render(request, 'registration/login.html')
 
 
-# === Логаут ===
 def logout_view(request):
     logout(request)
     return redirect('login')
 
 
-# === Глобальный чат ===
 @login_required
 def global_chat(request):
     return render(request, "chat/room.html", {
@@ -57,7 +53,6 @@ def global_chat(request):
     })
 
 
-# === Приватный чат ===
 @login_required
 def private_chat(request, username):
     me = request.user.username
@@ -69,7 +64,6 @@ def private_chat(request, username):
     })
 
 
-# === Комната по имени ===
 @login_required
 def room(request, room_name):
     return render(request, "chat/room.html", {

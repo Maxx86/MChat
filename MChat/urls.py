@@ -10,6 +10,6 @@ def home(request):
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', chat_views.register, name='register'),  # главная страница — регистрация
-    path('chat/', include('chat.urls')),             # комната по /chat/room_name/
+    path('', chat_views.register, name='register'),
+    path('chat/', include('chat.urls')),
 ]

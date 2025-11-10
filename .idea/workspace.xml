@@ -4,8 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66f6764b-59b7-457c-a3b0-eab8f92438b6" name="Changes" comment="requirements.txt">
+    <list default="true" id="66f6764b-59b7-457c-a3b0-eab8f92438b6" name="Changes" comment="Деплой">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MChat/asgi.py" beforeDir="false" afterPath="$PROJECT_DIR$/MChat/asgi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chat/consumers.py" beforeDir="false" afterPath="$PROJECT_DIR$/chat/consumers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chat/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/chat/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -194,7 +197,15 @@
       <option name="project" value="LOCAL" />
       <updated>1762769745121</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Деплой">
+      <option name="closed" value="true" />
+      <created>1762791273491</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1762791273491</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -235,6 +246,7 @@
     <MESSAGE value="новый дизайн" />
     <MESSAGE value="бутстрап" />
     <MESSAGE value="requirements.txt" />
-    <option name="LAST_COMMIT_MESSAGE" value="requirements.txt" />
+    <MESSAGE value="Деплой" />
+    <option name="LAST_COMMIT_MESSAGE" value="Деплой" />
   </component>
 </project>

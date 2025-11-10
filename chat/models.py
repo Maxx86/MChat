@@ -6,7 +6,7 @@ class Message(models.Model):
     room_name = models.CharField(max_length=255)
     sender = models.ForeignKey(
         User,
-        on_delete=models.SET_NULL,   # чтобы системные сообщения не падали
+        on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name="messages"

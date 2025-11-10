@@ -48,22 +48,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.scope["user"].username if self.scope["user"].is_authenticated else "Гость"
         )
 
-        # Фикс: добавляем в списки после подключения, чтобы не мешать join-логике
         await self.accept()
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.channel_layer.group_add("chat_global", self.channel_name)
 
-        # Проверяем, был ли пользователь уже активен в этой комнате
         already_in_room = (
                 self.room_name in ChatConsumer.active_users
                 and self.username in ChatConsumer.active_users[self.room_name]
         )
 
-        # Добавляем пользователя в активные
         ChatConsumer.active_users.setdefault(self.room_name, set()).add(self.username)
         ChatConsumer.global_online.add(self.username)
 
-        # 💬 лог о подключении (только если впервые и только для общего чата)
         if self.room_name == "global" and not already_in_room:
             system_user = await self._get_system_user()
             content = f"🔵 {self.username} вошёл(а) в чат"
@@ -91,12 +87,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     },
                 )
 
-        # обновляем список пользователей (без System)
         await self._update_all_user_lists()
 
         from django.utils.timezone import localtime
 
-        # загружаем историю сообщений (кроме последнего системного лога)
         messages = await sync_to_async(list)(
             Message.objects.filter(room_name=self.room_name)
             .exclude(content__icontains=f"🔵 {self.username} вошёл(а) в чат")

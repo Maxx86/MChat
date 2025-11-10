@@ -6,5 +6,5 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('global/', views.global_chat, name='global_chat'),
     path('private/<str:username>/', views.private_chat, name='private_chat'),
-    path('<str:room_name>/', views.room, name='room'),  # должен идти в самом конце!
+    path('<str:room_name>/', views.room, name='room'),
 ]
