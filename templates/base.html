@@ -1,55 +1,68 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>{% block title %}MChat{% endblock %}</title>
-    <style>
-        body {
-            font-family: "Segoe UI", sans-serif;
-            background: linear-gradient(135deg, #74ABE2, #5563DE);
-            color: #222;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8">
+  <title>{% block title %}MChat{% endblock %}</title>
+  <style>
+    :root { --content-width: 950px; --header-h: 64px; }
 
-        header {
-            background-color: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(6px);
-            padding: 12px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    /* Ничего лишнего: не трогаем фон – его задаёт room.html */
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+      color: #e2e8f0;
+    }
 
-        a.logout-btn {
-            color: #fff;
-            background-color: #5563DE;
-            text-decoration: none;
-            padding: 8px 14px;
-            border-radius: 6px;
-            font-weight: bold;
-            transition: 0.2s;
-        }
+    /* Центрированный фиксированный хедер шириной как у чата */
+    .site-header {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: var(--content-width);
+      max-width: 95%;
+      height: var(--header-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-bottom: none;
+      box-shadow: 0 6px 18px rgba(0,0,0,.25);
+      z-index: 1000;
+    }
+    .site-logo {
+      font-weight: 700;
+      letter-spacing: .3px;
+      text-shadow: 0 0 12px rgba(56,189,248,.6);
+      display: inline-flex; gap: 8px; align-items: center;
+    }
+    .logout-btn {
+      background: linear-gradient(90deg,#6366f1,#3b82f6);
+      color:#fff; text-decoration:none; font-weight:600;
+      padding:8px 16px; border-radius:10px; transition:.2s;
+    }
+    .logout-btn:hover { transform: translateY(-1px); box-shadow:0 0 14px rgba(99,102,241,.45); }
 
-        a.logout-btn:hover {
-            background-color: #4652c5;
-        }
-
-        main {
-            padding: 20px;
-        }
-    </style>
+    /* Чтобы контент начинался ниже фиксированного хедера */
+    main { padding-top: calc(var(--header-h) + 24px); }
+  </style>
 </head>
 <body>
-<header>
-    <h2>MChat</h2>
+  <header class="site-header">
+    <span class="site-logo">💬 MChat</span>
     {% if user.is_authenticated %}
-        <a href="{% url 'logout' %}" class="logout-btn">Выйти</a>
+      <a href="{% url 'logout' %}" class="logout-btn">Выйти</a>
     {% endif %}
-</header>
+  </header>
 
-<main>
+  <main>
     {% block content %}{% endblock %}
-</main>
+  </main>
 </body>
 </html>
