@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66f6764b-59b7-457c-a3b0-eab8f92438b6" name="Changes" comment="бутстрап">
+    <list default="true" id="66f6764b-59b7-457c-a3b0-eab8f92438b6" name="Changes" comment="requirements.txt">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
     </list>
@@ -178,7 +178,23 @@
       <option name="project" value="LOCAL" />
       <updated>1762758959806</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="requirements.txt">
+      <option name="closed" value="true" />
+      <created>1762769655890</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1762769655890</updated>
+    </task>
+    <task id="LOCAL-00015" summary="requirements.txt">
+      <option name="closed" value="true" />
+      <created>1762769745121</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1762769745121</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -218,6 +234,7 @@
     <MESSAGE value="чуть косметики" />
     <MESSAGE value="новый дизайн" />
     <MESSAGE value="бутстрап" />
-    <option name="LAST_COMMIT_MESSAGE" value="бутстрап" />
+    <MESSAGE value="requirements.txt" />
+    <option name="LAST_COMMIT_MESSAGE" value="requirements.txt" />
   </component>
 </project>
